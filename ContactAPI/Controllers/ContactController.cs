@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using ContactAPI.Services.ContactService;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.Contracts;
 
@@ -8,20 +9,22 @@ namespace ContactAPI.Controllers
 	[ApiController]
 	public class ContactController : ControllerBase
 	{
-		private static List<Contact> contacts = new List<Contact>
-			{
-				new Contact { Id = 1, Name = "John", Email = "John@xyz.com", Phone = "760032010" },
-				new Contact { Id = 2, Name = "James", Email = "James@xyz.com", Phone = "870234609" }
-			};
+		private readonly IContactService _contactService;
+
+		public ContactController(IContactService contactService)
+		{
+			_contactService = contactService;
+		}
+
 		[HttpGet]
 		public async Task<ActionResult<List<Contact>>> GetAllContacts()
 		{
-			return Ok(contacts);
+			return _contactService.GetAllContacts();
 		}
 		[HttpGet("{id}")]
 		public async Task<ActionResult<Contact>> GetSingleContact(int id)
 		{
-			var contact = contacts.Find(x => x.Id == id);
+			var contact = _contactService.GetSingleContact(id);
 			if(contact == null)
 			{
 				return NotFound("This contact doesn't exist");
@@ -29,34 +32,30 @@ namespace ContactAPI.Controllers
 			return Ok(contact);
 		}
 		[HttpPost]
-		public async Task<ActionResult<List<Contact>>> AddContact([FromBody]Contact contact)
+		public async Task<ActionResult<List<Contact>>> AddContact(Contact contact)
 		{
-			contacts.Add(contact);
+			var Contact = _contactService.AddContact(contact);
 			return Ok(contact);
 		}
 		[HttpPut("id")]
 		public async Task<ActionResult<List<Contact>>> UpdateContact(int id, Contact request)
 		{
-			var contact = contacts.Find(x => x.Id == id);
+			var contact = _contactService.UpdateContact(id, request);
 			if (contact == null)
 			{
 				return NotFound("This contact doesn't exist");
 			}
-			contact.Name = request.Name;
-			contact.Email = request.Email;
-			contact.Phone = request.Phone;
 
 			return Ok(contact);
 		}
 		[HttpDelete("id")]
 		public async Task<ActionResult<List<Contact>>> DeleteContact (int id)
 		{
-			var contact = contacts.Find(x => x.Id == id);
+			var contact = _contactService.DeleteContact(id);
 			if (contact == null)
 			{
 				return NotFound("This contact doesn't exist");
 			}
-			contacts.Remove(contact);
 			return Ok(contact);
 		}
 	}
