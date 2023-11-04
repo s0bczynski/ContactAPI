@@ -19,12 +19,12 @@ namespace ContactAPI.Controllers
 		[HttpGet]
 		public async Task<ActionResult<List<Contact>>> GetAllContacts()
 		{
-			return _contactService.GetAllContacts();
+			return await _contactService.GetAllContacts();
 		}
 		[HttpGet("{id}")]
 		public async Task<ActionResult<Contact>> GetSingleContact(int id)
 		{
-			var contact = _contactService.GetSingleContact(id);
+			var contact = await _contactService.GetSingleContact(id);
 			if(contact == null)
 			{
 				return NotFound("This contact doesn't exist");
@@ -34,13 +34,13 @@ namespace ContactAPI.Controllers
 		[HttpPost]
 		public async Task<ActionResult<List<Contact>>> AddContact(Contact contact)
 		{
-			var Contact = _contactService.AddContact(contact);
+			var Contact = await _contactService.AddContact(contact);
 			return Ok(contact);
 		}
 		[HttpPut("id")]
 		public async Task<ActionResult<List<Contact>>> UpdateContact(int id, Contact request)
 		{
-			var contact = _contactService.UpdateContact(id, request);
+			var contact = await _contactService.UpdateContact(id, request);
 			if (contact == null)
 			{
 				return NotFound("This contact doesn't exist");
@@ -51,7 +51,7 @@ namespace ContactAPI.Controllers
 		[HttpDelete("id")]
 		public async Task<ActionResult<List<Contact>>> DeleteContact (int id)
 		{
-			var contact = _contactService.DeleteContact(id);
+			var contact =  await _contactService.DeleteContact(id);
 			if (contact == null)
 			{
 				return NotFound("This contact doesn't exist");
